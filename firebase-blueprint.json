@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "A hair accessory product",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the product"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the product"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the product"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in Naira"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category of the product (e.g., crochet, fabric, headbands, alice, clips, earrings)"
+        },
+        "badge": {
+          "type": "string",
+          "description": "Optional badge text (e.g., Bestseller, New, Popular)"
+        },
+        "badgeColor": {
+          "type": "string",
+          "description": "Optional hex color for the badge"
+        },
+        "icon": {
+          "type": "string",
+          "description": "Emoji icon for the product"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the product was created"
+        }
+      },
+      "required": ["name", "description", "price", "category", "icon"]
+    }
+  },
+  "firestore": {
+    "products": {
+      "schema": "Product",
+      "description": "Collection of hair accessory products"
+    }
+  }
+}
