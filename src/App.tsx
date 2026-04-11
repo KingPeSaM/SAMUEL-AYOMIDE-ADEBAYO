@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Home, ShoppingBag, Instagram, ChevronRight, ChevronLeft, Star, Heart, Leaf, User, Menu, X, LogIn, ShieldCheck, Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
+import { Home, ShoppingBag, Instagram, ChevronRight, ChevronLeft, Star, Heart, Leaf, User, Menu, X, LogIn, LogOut, ShieldCheck, Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
 import { 
   db, 
   auth, 
@@ -110,7 +110,7 @@ const ProductCard = ({ product, onAddToCart }: { product: Product; onAddToCart: 
           </div>
           <button
             onClick={() => onAddToCart(product)}
-            className="bg-[#C0132C] hover:bg-[#8B0A2A] text-white px-6 py-3 rounded-xl text-[0.75rem] font-bold tracking-widest uppercase transition-all active:scale-95 shadow-lg shadow-[#C0132C]/10"
+            className="bg-[#C0132C] hover:bg-[#8B0A2A] text-white px-8 py-4 rounded-xl text-[0.82rem] font-bold tracking-widest uppercase transition-all active:scale-95 shadow-lg shadow-[#C0132C]/20"
           >
             Add to Cart
           </button>
@@ -413,7 +413,7 @@ export default function App() {
     // Auth listener
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setIsAdmin(currentUser?.email === 'adebayosam3249@gmail.com');
+      setIsAdmin(currentUser?.email === 'adebayosam3249@gmail.com' || currentUser?.email === 'dopamuexcel@gmail.com');
     });
 
     // Products listener
@@ -606,7 +606,7 @@ export default function App() {
             </button>
           </li>
           
-          {!user && (
+          {!user ? (
             <li className="hidden sm:block">
               <button
                 onClick={handleLogin}
@@ -616,9 +616,30 @@ export default function App() {
                 <LogIn size={18} />
               </button>
             </li>
+          ) : !isAdmin && (
+            <li className="hidden sm:block">
+              <button
+                onClick={handleLogout}
+                className="text-[#7a5a5a] hover:text-[#C0132C] transition-colors flex items-center gap-1 text-[0.7rem] uppercase font-bold"
+                title="Logout"
+              >
+                <LogOut size={16} />
+                Switch
+              </button>
+            </li>
           )}
         </ul>
       </nav>
+
+      {user && !isAdmin && currentPage === 'home' && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[200] bg-white/90 backdrop-blur-md border border-[#C0132C]/20 px-6 py-3 rounded-2xl shadow-xl flex items-center gap-3 animate-bounce">
+          <div className="w-2 h-2 bg-[#C0132C] rounded-full animate-pulse" />
+          <p className="text-[0.8rem] font-medium text-[#8B0A2A]">
+            Logged in as <span className="font-bold">{user.email}</span> (Not an Admin)
+          </p>
+          <button onClick={handleLogout} className="text-[#C0132C] text-[0.7rem] font-bold uppercase hover:underline ml-2">Logout</button>
+        </div>
+      )}
 
       <main>
         {currentPage === 'home' ? (

@@ -13,7 +13,8 @@ service cloud.firestore {
       
       // Only admin can create, update, or delete products
       allow create, update, delete: if request.auth != null && 
-                                       request.auth.token.email == "adebayosam3249@gmail.com" &&
+                                       (request.auth.token.email == "adebayosam3249@gmail.com" || 
+                                        request.auth.token.email == "dopamuexcel@gmail.com") &&
                                        request.auth.token.email_verified == true;
     }
   }
