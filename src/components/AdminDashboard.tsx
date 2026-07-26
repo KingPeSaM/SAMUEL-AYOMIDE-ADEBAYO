@@ -68,7 +68,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ products, onAddProduct,
             <div className="flex items-center gap-3 mb-2">
               <div className="w-20 h-20 rounded-xl bg-white flex items-center justify-center p-3 shadow-lg shadow-[#C0132C]/10 border border-[#C0132C]/5">
                 <img 
-                  src="https://lh3.googleusercontent.com/d/1u0Uplg9oO8PDC_6arSNpvWnCXcOY-RRF" 
+                  src="https://lh3.googleusercontent.com/d/18VbOSt3BhA0VVDM6E2vRgRj04RgLAkEz" 
                   alt="Logo" 
                   className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"

@@ -100,7 +100,7 @@ const ProductForm: React.FC<ProductFormProps> = ({ onSubmit, onCancel, initialDa
           <div className="flex items-center gap-4">
             <div className="w-24 h-24 rounded-2xl bg-white flex items-center justify-center p-4 shadow-lg shadow-[#C0132C]/10 border border-[#C0132C]/5">
               <img 
-                src="https://lh3.googleusercontent.com/d/1u0Uplg9oO8PDC_6arSNpvWnCXcOY-RRF" 
+                src="https://lh3.googleusercontent.com/d/18VbOSt3BhA0VVDM6E2vRgRj04RgLAkEz" 
                 alt="Logo" 
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"

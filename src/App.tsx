@@ -21,6 +21,7 @@ import {
   onSnapshot, 
   query, 
   orderBy,
+  limit,
   Timestamp,
   handleFirestoreError,
   OperationType
@@ -394,8 +395,10 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   
   const [products, setProducts] = useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [asyncError, setAsyncError] = useState<Error | null>(null);
   const [cart, setCart] = useState<CartItem[]>(() => {
     const savedCart = localStorage.getItem('starlight_cart');
     return savedCart ? JSON.parse(savedCart) : [];
@@ -405,6 +408,10 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('starlight_cart', JSON.stringify(cart));
   }, [cart]);
+
+  if (asyncError) {
+    throw asyncError;
+  }
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
@@ -417,14 +424,18 @@ export default function App() {
     });
 
     // Products listener
-    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'));
+    setIsLoadingProducts(true);
+    const q = query(collection(db, 'products'), orderBy('createdAt', 'desc'), limit(50));
     const unsubscribeProducts = onSnapshot(q, (snapshot) => {
       const productsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Product[];
       setProducts(productsData);
+      setIsLoadingProducts(false);
     }, (error) => {
+      setIsLoadingProducts(false);
+      setAsyncError(error instanceof Error ? error : new Error(JSON.stringify(error)));
       handleFirestoreError(error, OperationType.LIST, 'products');
     });
 
@@ -540,9 +551,9 @@ export default function App() {
       <nav className={`fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-4 md:px-12 py-2 md:py-3 transition-all duration-300 ${scrolled ? 'bg-[#FAF0F0]/94 backdrop-blur-lg shadow-[0_4px_30px_rgba(192,19,44,0.08)] border-b border-[#C0132C]/10' : 'bg-transparent'}`}>
         <button onClick={() => navigateTo('home')} className="flex items-center group flex-shrink-0">
           <img 
-            src="https://lh3.googleusercontent.com/d/1XbsofjtXQ5q3arlDW2nCuRAX0cJN8IDj" 
+            src="https://lh3.googleusercontent.com/d/18VbOSt3BhA0VVDM6E2vRgRj04RgLAkEz" 
             alt="Starlight Accessories" 
-            className="h-[50px] md:h-[76px] w-auto object-contain cursor-pointer"
+            className="h-[50px] md:h-[76px] w-auto object-contain cursor-pointer rounded-full"
             referrerPolicy="no-referrer"
           />
         </button>
@@ -742,22 +753,38 @@ export default function App() {
                 </motion.h2>
               </div>
 
-              <ProductCarousel 
-                products={products.filter(p => p.badge).length > 0 
-                  ? products.filter(p => p.badge) 
-                  : products.slice(0, 8)
-                } 
-                onAddToCart={addToCart} 
-              />
+              {isLoadingProducts ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-6">
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-[#C0132C]/10 border-t-[#C0132C] rounded-full animate-spin" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-2 h-2 bg-[#C0132C] rounded-full animate-pulse" />
+                    </div>
+                  </div>
+                  <p className="text-[0.75rem] font-bold uppercase tracking-[0.3em] text-[#C0132C] animate-pulse">
+                    Curating Excellence...
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <ProductCarousel 
+                    products={products.filter(p => p.badge).length > 0 
+                      ? products.filter(p => p.badge) 
+                      : products.slice(0, 8)
+                    } 
+                    onAddToCart={addToCart} 
+                  />
 
-              <div className="text-center mt-14">
-                <button
-                  onClick={() => navigateTo('shop')}
-                  className="bg-[#C0132C] hover:bg-transparent border-2 border-[#C0132C] text-white hover:text-[#C0132C] px-9 py-3.5 rounded-[12px] text-[0.82rem] font-medium tracking-widest uppercase transition-all flex items-center gap-2 mx-auto"
-                >
-                  View Full Collection <ChevronRight size={16} />
-                </button>
-              </div>
+                  <div className="text-center mt-14">
+                    <button
+                      onClick={() => navigateTo('shop')}
+                      className="bg-[#C0132C] hover:bg-transparent border-2 border-[#C0132C] text-white hover:text-[#C0132C] px-9 py-3.5 rounded-[12px] text-[0.82rem] font-medium tracking-widest uppercase transition-all flex items-center gap-2 mx-auto"
+                    >
+                      View Full Collection <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </>
+              )}
             </section>
 
             {/* --- Fashion That Gives Back Section --- */}
@@ -870,11 +897,11 @@ export default function App() {
 
             {/* --- About Section --- */}
             <section id="about-anchor" className="py-24 px-6 md:px-12 bg-[#FAF0F0] flex flex-col md:flex-row items-center gap-20">
-              <div className="w-[255.667px] h-[252.667px] rounded-full flex-shrink-0 bg-white flex items-center justify-center p-10 border-[3px] border-[#C0132C]/10 shadow-[0_20px_60px_rgba(192,19,44,0.08)]">
+              <div className="w-[250px] h-[250px] rounded-full flex-shrink-0 bg-white flex items-center justify-center p-8 border-[3px] border-[#C0132C]/10 shadow-[0_20px_60px_rgba(192,19,44,0.08)] overflow-hidden">
                 <img 
-                  src="https://lh3.googleusercontent.com/d/1fLJbzdZskQUwIM4TBfiOUfnrxkcsVy-y" 
+                  src="https://lh3.googleusercontent.com/d/18VbOSt3BhA0VVDM6E2vRgRj04RgLAkEz" 
                   alt="Starlight Accessories" 
-                  className="w-[216.333px] h-[271.323px] object-contain"
+                  className="w-full h-full object-contain"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -987,7 +1014,12 @@ export default function App() {
             <section className="py-12 px-6 md:px-12 bg-white min-h-[60vh]">
               <div className="max-w-[1200px] mx-auto">
                 <AnimatePresence mode="popLayout">
-                  {products.filter(p => selectedCategory === 'all' || p.category === selectedCategory).length > 0 ? (
+                  {isLoadingProducts ? (
+                    <div className="flex flex-col items-center justify-center py-24 gap-6">
+                      <div className="w-12 h-12 border-4 border-[#C0132C]/10 border-t-[#C0132C] rounded-full animate-spin" />
+                      <p className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-[#C0132C]">Loading Collections...</p>
+                    </div>
+                  ) : products.filter(p => selectedCategory === 'all' || p.category === selectedCategory).length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                       {products.filter(p => selectedCategory === 'all' || p.category === selectedCategory).map((product) => (
                         <ProductCard key={product.id} product={product} onAddToCart={addToCart} />
@@ -1031,9 +1063,9 @@ export default function App() {
       <footer className="bg-[#1A1A1A] text-white/70 py-16 px-6 md:px-12 text-center">
         <div className="flex flex-col items-center mb-12">
           <img 
-            src="https://lh3.googleusercontent.com/d/1ahbtXAgCbTAX7MT0WcF91HEolIsR5mB6" 
+            src="https://lh3.googleusercontent.com/d/1KNYmJC2cx9baX4jGOe5zhq4qKd4AhY4f" 
             alt="Starlight Accessories" 
-            className="w-[511px] h-[283px] object-contain mb-4"
+            className="h-28 md:h-36 max-w-[85vw] w-auto object-contain mb-4"
             referrerPolicy="no-referrer"
           />
         </div>
